@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>iCafeCloud Client</title>
+
+	<link rel="shortcut icon" href="images/favicon.png" />
+	<link rel="stylesheet" type="text/css" href="js/toastr/toastr.css">
+	<link rel="stylesheet" type="text/css" href="js/sweetalert/sweetalert.css">
+	<link rel="stylesheet" type="text/css" href="js/contextmenu/jquery.contextMenu.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="css/responsive.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+	<style type="text/css">
+		.contextmenu-item-header { font-weight:bold !important; background-color: #eeeeee !important; color:#000 !important; margin:0 0 8px 0; border-top:none; border-bottom:1px solid #666; }
+		.context-menu-list { margin-top:0 !important; padding-top:0 !important; background-color:#27293d !important; border: none !important;}
+		.context-menu-item { background-color: #27293d !important; color:rgba(250, 255, 255, 0.5) !important; }
+		.context-menu-item.context-menu-disabled {color: rgba(250, 255, 255, 0.3) !important;}
+		.context-menu-visible { color:#c0c0c0 !important; }
+		.context-menu-separator { border-bottom: 1px solid #666 !important;}
+		.fa-2x {
+			line-height: 1.5;
+		}
+		.required:after{ color:red; content:"*";}
+	</style>
+</head>
+<body ondragstart = "return false" onselectstart = "return false" class="bs-c br-n ba-f text-gray" style="background-image: url(images/games.jpg);">
+
+<div id="page_lock" style="z-index: 999;">
+	<section class="formDiv main-section" style="width:100%; display:table; height:100%;">
+		<div class="container-fluid" style="display:table-cell; vertical-align:middle;">
+
+			<div class="mx-auto" style="z-index: 3; width:20%;">
+				<form method="post" id="unlockForm" role="form" class="text-center form-horizontal" onsubmit="return delay_execute(unlock_form_submit);">
+					<h2 class="lang text-center mb-5">Unlock</h2>
+					<div class="form-group">
+						<input type="text" class="lang form-control bg-transparent" name="username" placeholder="Username" disabled>
+					</div>
+					<div class="form-group">
+						<input type="password" class="lang form-control bg-transparent" name="password" placeholder="Password">
+					</div>
+					<div class="btn-group text-center">
+						<button type="submit" class="lang btn btn-lg btn-unlock py-0" data-placement="bottom" data-toggle="tooltip" title="Unlock"><i class="fal fa-unlock fa-2x"></i></button>						
+					</div>
+				</form>
+			</div>
+
+		</div>
+	</section>
+</div>
+
+<div id="page_login">
+	<div class="feedback-icon">
+	<a href="javascript:void(0)" class="power-button pt-3 lang" data-toggle="tooltip" title="Restart button" onclick="javascript:CallFunction('SHUTDOWN REBOOT');">
+		<i class="fal fa-power-off fa-2x "></i> 
+	</a>
+	</div>
+	<span id="version_date" class=" align-moddle ml-2"></span>
+
+	<!-- video background -->
+	<div>
+		<video class="video url-video d-none" autoplay muted loop>
+			<source type="video/webm" id="url-video"> 
+		</video>
+	</div>
+	<div class="d-none youtube-video">
+		<iframe id="youtube-video" style="height: 100vh;width:100%; border:none; margin:0;padding:0; z-index: -1; position: fixed;" allow="autoplay"></iframe>
+	</div>
+	
+	<!-- st:login div -->
+	<div class="pc_name normal-only"></div>
+
+	<section class="loginDiv formDiv main-section" style="width:100%; height:100%;">
+		<div class="container-fluid text-center" style="width:99.8%; display:flex; flex-direction: row; align-items:flex-start; height:100%; vertical-align: middle;">
+			<!-- st:rank table left -->
+			<div style="width:39%; display:inline-block; vertical-align:middle; height:100%; margin:0; " >
+				<!-- content area -->
+				<div class="px-8 mt-10 ranking-div" style="display: none; margin-top:180px;">
+					<h4 class="mb-3" id="last-month-name" style="font-size:32px;"></h4>
+					<div id="carousel-last-month" class="carousel carousel-spotlight carousel-header slide carousel-fade fl-scn py-5" data-ride="carousel">
+
+						<!-- carousel items -->
+						<div class="rank carousel-inner a-cont"><div class="carousel-item item active">#</div></div>
+
+						<!-- carousel nav -->
+						<div class="carousel-control-prev a-out-t" >
+							<a class="text-light" href="#carousel-last-month" data-slide="prev">
+								<span class="carousel-control-prev-icon"></span>
+							</a>
+						</div>
+						<div class="carousel-control-next a-out-t" >
+							<a class="text-light" href="#carousel-last-month" data-slide="next">
+								<span class="carousel-control-next-icon"></span>
+							</a>
+						</div>
+
+					</div>
+				</div>
+				<!-- content area -->
+			</div>
+			<!-- st:login -->
+			<div style="display: inline-block; width:20%; height:100%; margin:0; vertical-align: middle; text-align:center; ">
+
+				<div style="display: table; width:100%; height:100%;">
+					<div class="container-fluid" style="display:table-cell; height:100%; vertical-align: middle; ">
+						<div class="mx-auto" style="z-index: 3; width:80%; height: 250px;" id="login-form-container">
+							<form method="post" id="loginForm" role="form" class="form-horizontal" onsubmit="return delay_execute(login_form_submit);">
+								<div class="form-group">
+									<input name="username" type="text" class="form-control lang bg-transparent" placeholder="username" required id="username">
+								</div>
+
+								<div class="form-group">
+									<input name="password" type="password" class="form-control lang bg-transparent" placeholder="password" required id="password">
+								</div>
+
+								<div class="btn-group text-center mt-3">
+									<button type="submit" class="btn btn-lg mr-3 memberlogin lang py-0" data-placement="bottom" data-toggle="tooltip" title="Login"><i class="fal fa-check fa-2x "></i></button>
+									<button type="button" class="btn btn-lg mr-3 lang home-only" id="close-button" onclick="javascript:close_click()" data-placement="bottom" data-toggle="tooltip" title="Close"><i class="fal fa-xmark fa-2x "></i></button>
+								</div>
+							</form>
+						</div>
+						<p style="text-align:center;" class="home-only"><a class="btn btn-link" style="color:#888888;" href="javascript:open_url(theEvents.rank_baseurl() + '/signup.php')">Click here to create an account</a></p>
+					</div>
+				</div>
+
+			</div>
+			<!-- st:rank table right -->
+			<div style="width:39%; display:inline-block; height:100%; margin:0; vertical-align: middle; ">
+				<!-- content area -->
+				<div class="px-8 mt-10 ranking-div" style="display: none; margin-top:180px;">
+					<h4 class="mb-3" id="current-month-name" style="font-size:32px;"></h4>
+					<div id="carousel-current-month" class="carousel carousel-spotlight carousel-header slide carousel-fade fl-scn py-5" data-ride="carousel">
+
+						<!-- carousel items -->
+						<div class="rank carousel-inner a-cont"><div class="carousel-item item active">#</div></div>
+
+						<!-- carousel nav -->
+						<div class="carousel-control-prev a-out-t">
+							<a class="text-light" href="#carousel-current-month" data-slide="prev">
+								<span class="carousel-control-prev-icon"></span>
+							</a>
+						</div>
+						<div class="carousel-control-next a-out-t">
+							<a class="text-light" href="#carousel-current-month" data-slide="next">
+								<span class="carousel-control-next-icon"></span>
+							</a>
+						</div>
+
+					</div>
+				</div>
+				<!-- content area -->
+			</div>
+		</div>
+	</section>
+	<!-- dd:login div -->
+
+	<!-- st:admin exit div -->
+	<section class="adminexitDiv formDiv main-section" style="width:100%; display:table; height:100%;">
+		<div class="container-fluid" style="display:table-cell; vertical-align:middle;">
+			<div class="mx-auto" style="z-index: 3; width:20%; max-width:300px;">
+				<form method="post" id="adminexitForm" role="form" class="form-horizontal text-center" onsubmit="return delay_execute(admin_exit_form_submit);">
+					<div class="form-group">
+						<input type="password" class="lang form-control bg-transparent" name="password" placeholder="Admin password" value="">
+					</div>
+					<div class="btn-group mt-3">
+						<button type="submit" class="lang btn btn-lg mr-3 py-0" data-placement="bottom" data-toggle="tooltip" title="Quit"><i class="fal fa-check fa-2x" aria-hidden="true"></i></button>
+						<button type="button" onclick="javascript:show_login_page('login')" class="lang btn btn-lg py-0" data-placement="bottom" data-toggle="tooltip" title="Cancel"><i class="fal fa-xmark fa-2x "></i></i></button>
+					</div>
+				</form>
+			</div>
+
+		</div>
+	</section>
+	<!-- ed:admin exit div -->
+
+	<!-- st:register div -->
+	<section class="registerDiv formDiv main-section" style="width:100%; display:table; height:100%;">
+		<div class="container-fluid" style="display:table-cell; vertical-align:middle;">
+			<div class="pc_name"></div>
+
+			<div class="mx-auto" style="z-index: 3; width:20%; ">
+				<form method="post" id="registerForm" role="form" class="form-horizontal text-center" onsubmit="return delay_execute(member_register_form_submit);">
+					<h2 class="lang text-center mb-5">Register member</h2>
+
+					<div class="form-group">
+						<input type="text" class="lang form-control bg-transparent" name="username" placeholder="Username" value="">
+					</div>
+
+					<div class="form-group">
+						<input type="password" class="lang form-control bg-transparent" name="password" placeholder="Password" value="">
+					</div>
+
+					<div class="form-group">
+						<input type="password" class="lang form-control bg-transparent" name="confirm_password" placeholder="Confirm password" value="">
+					</div>
+
+					<div class="btn-group mt-3">
+						<button type="submit" class="lang btn btn-lg mr-3  py-0" data-placement="bottom" data-toggle="tooltip" title="Register"><i class="fal fa-check fa-2x "></i></button>
+						<button type="button" onclick="javascript:show_login_page('login')" class="lang btn btn-lg  py-0" data-placement="bottom" data-toggle="tooltip" title="Cancel"><i class="fa fa-xmark fa-2x "></i></button>					
+					</div>
+				</form>
+			</div>
+		</div>
+	</section>
+	<!-- ed:register div -->
+
+	<!-- st:home-version-enter-cafe-id div -->
+	<section class="homecafeidDiv formDiv main-section" style="width:100%; display:table; height:100%;">
+		<div class="container-fluid" style="display:table-cell; vertical-align:middle;">
+			<div class="mx-auto" style="z-index: 3; width:20%; ">
+				<form method="post" id="homecafeidForm" role="form" class="form-horizontal text-center" onsubmit="return delay_execute(homecafeid_form_submit);">
+					<div class="form-group mx-auto col-sm-8">
+						<input type="number" class="lang form-control bg-transparent" name="icafe_id" placeholder="Cafe ID" value="">
+					</div>
+					<div class="btn-group text-center mt-3">
+						<button type="submit" class="lang btn btn-lg mr-3 py-0" data-placement="bottom" data-toggle="tooltip" title="Continue"><i class="fal fa-check fa-2x "></i></button>
+						<button type="button" onclick="javascript:close_click()" class="lang btn btn-lg  py-0" data-placement="bottom" data-toggle="tooltip" title="Close"><i class="fal fa-xmark fa-2x "></i></i></button>
+					</div>
+				</form>
+			</div>
+
+		</div>
+	</section>
+	<!-- ed:home-version-enter-cafe-id div -->
+</div>
+
+<div id="page_games">
+	<!-- st:header -->
+	<section class="header-section">
+		<div class="container-fluid" style="width:100%; display:inline-block;">
+			<div class="header-area" style="width:100%; display:table;">
+
+				<div class="feedback-icon" style="width:35%; display:inline-block; vertical-align:middle;">
+					<a class="lang mr-4" href="javascript:theEvents.show()" data-toggle="tooltip" data-placement="bottom" title="Home">
+						<i class="fal fa-house fa-xl  mt-1"></i>
+					</a>
+					<a class="lang mr-4" href="javascript:theEvents.refresh()" data-toggle="tooltip" data-placement="bottom" title="Refresh">
+						<i class="fal fa-rotate-right fa-xl  mt-1"></i>
+					</a>
+
+					<a class="lang mr-4" href="javascript:audio_settings()" data-toggle="tooltip" data-placement="bottom" title="Audio settings">
+						<i class="fal fa-volume-off fa-xl  mt-1"></i>
+					</a>
+					<a class="lang mr-4" href="javascript:display_settings()" data-toggle="tooltip" data-placement="bottom" title="Display settings">
+						<i class="fal fa-display fa-xl  mt-1"></i>
+					</a>
+					<a class="lang mr-4" href="javascript:mouse_settings()" data-toggle="tooltip" data-placement="bottom" title="Mouse settings">
+						<i class="fal fa-computer-mouse fa-xl  mt-1"></i>
+					</a>
+
+					<a class="lang mr-4" href="javascript:open_url(theEvents.rank_baseurl() + '/telegram/')" data-toggle="tooltip" data-placement="bottom" title="Join our Telegram group">
+						<i class="fab fa-telegram fa-xl  mt-1"></i>
+					</a>
+					<a class="lang mr-4" href="javascript:open_url(theEvents.rank_baseurl())" data-toggle="tooltip" data-placement="bottom" title="Visit ranking website">
+						<i class="fal fa-globe fa-xl  mt-1"></i>
+					</a>
+				</div>
+
+				<div class="" style="width:15%; display:inline-block;">
+				</div>
+
+				<div class="" style="width:15%; display:inline-block;">
+					<div class="header-run-games" style="padding-left:60px;">
+					</div>
+				</div>
+
+				<div class="" style="width:35%; display:inline-block; vertical-align:middle;">
+					<div class="header-button py-2">
+						<div class="header-first-button mr-3">
+							<a class="btn btn-outline-success lang mr-2 py-0" href="javascript:theConvertToMember.show()" data-toggle="tooltip" data-placement="bottom" title="Convert to member" id="convert-to-member-button">
+								<i class="fal fa-user-plus fa-2x " style="max-width:23px;"></i>
+							</a>
+						</div>
+						<div class="feedback-icon text-left mt-1">
+							
+							<a class="lang mr-4 home-only" href="javascript:minimize()" data-toggle="tooltip" data-placement="bottom" title="Minimize" id="minimize-button">
+								<i class="fal fa-window-minimize fa-xl "></i>
+							</a>
+							<a class="lang mr-4" href="javascript:customer_feedback()" data-toggle="tooltip" data-placement="bottom" title="Feedback" id="feedback-button">
+								<i class="fal fa-message fa-xl "></i>								
+							</a>
+							<a class="lang mr-4" href="javascript:send_assist()" data-toggle="tooltip" data-placement="bottom" title="Help assist (Ctrl+F1)" id="assist-button">
+								<i class="fal fa-circle-question fa-xl "></i>
+							</a>
+							<a class="lang mr-4" href="javascript:change_password_click()" data-toggle="tooltip" data-placement="bottom" title="Change password" id="changepassword-button">
+								<i class="fal fa-key fa-xl "></i>
+							</a>
+						</div>
+
+						<div class="header-first-button">
+							<a href="javascript:show_set_lockpassword_dialog()" class="btn btn-outline-success lang mr-2 py-0" data-toggle="tooltip" data-placement="bottom" title="Lock screen" id="lock-button"><i class="fal fa-lock fa-2x "></i></a>
+						</div>
+						<div class="header-second-button" id="logout-button">
+							<a href="javascript:checkout_click()" class="btn btn-outline-danger lang py-0"  data-toggle="tooltip" data-placement="bottom" title="Logout"><i class="fal fa-right-from-bracket fa-2x "></i></a>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="container-fluid" style="width:100%; display:inline-block; text-align:center;">
+			<img src="images/customized/logo.png" style="max-width:85px; margin-top:-80px" onerror="this.src='images/logo.png';" id="cafe_info_cafe_logo">
+		</div>
+	</section>
+	<!-- ed:header -->
+
+	<!-- st:main area -->
+	<section class="main-section">
+		<div class="container-fluid" style="width:99.8%; display:inline-block;">
+
+			<!-- st:main left col / game images -->
+			<div class="" style="width:75%; display:inline-block;" id="games-main-region">
+
+				<div class="normal-only" style="width:100%; display:inline-block;" id="top-buttons-and-search-bar">
+					<!-- st:top buttons -->
+					<div class="" style="width:80%; display:inline-block;">
+						<div class="btn-group" id="top-buttons">
+							<button class="btn btn-lg mr-3 lang" data-type="home" onclick="javascript:theGameList.load_games_by_class('home', '', '')"> Home </button>
+							<button class="btn btn-lg mr-3 lang" data-type="all" onclick="javascript:theGameList.load_games_by_class('all', '', '')"> All Games </button>
+							<button class="btn btn-lg mr-3 lang" data-type="license" onclick="javascript:theGameList.load_games_by_class('license', '', '')"> Licensed Games </button>
+
+							<button class="btn btn-lg mr-3" data-type="class">
+								<a class="dropdown dropdown-toggle lang" id="more-games" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									More Games
+								</a>
+								<div class="dropdown-menu dropdown-menu-right" aria-labelledby="more-games" data-x-placement="bottom-end"></div>
+							</button>
+
+							<button class="btn btn-lg mr-3 lang" data-type="shop" onclick="javascript:theShop.show()"> Shop </button>
+							<button class="btn btn-lg mr-3 lang" data-type="events" onclick="javascript:theEvents.show()" id="events-button"> Events </button>
+						</div>
+					</div>
+					<!-- ed:top buttons -->
+
+					<!-- st:search bar -->
+					<div class="" style="width:19%; float:right;">
+						<form class="input-group border-0 bg-transparent" onsubmit="return false;">
+							<input class="form-control lang" type="text" placeholder="Search game" style="width:70%; height: 42px; display:inline-block;" id="search-bar">
+							<div class="input-group-append" style="display:inline-block;" data-toggle="tooltip" data-placement="bottom" title="Search game">
+								<button class="btn btn-sm btn-outline-secondary" type="button" style="height:42px;">
+									<i class="fal fa-search "></i>
+								</button>
+							</div>
+						</form>
+					</div>
+					<!-- ed:search bar -->
+				</div>
+
+				<div id="games">
+					<div class="container games-container"></div>
+					<div class="container events-container">
+						<div id="event-banner" class="event-banner-fortnite">
+						</div>
+
+						<div style="padding:20px 20px 0 20px;">
+							<h2 id="my-events-title">My events</h2>
+							<div class="events" id="my-events"></div>
+							<h2 id="active-events-title">Active events</h2>
+							<div class="events" id="active-events"></div>
+						</div>
+					</div>
+					<div class="container event-detail-container event-detail">
+						<div style="padding:20px 20px 0 20px;">
+							<table style="width:100%; max-height:232px;">
+								<tr>
+									<td style="width:325px; vertical-align: top;" class="info">
+										<div class="events"></div>
+									</td>
+									<td style="vertical-align: middle;">
+										<div class="event-buttons row"></div>
+									</td>
+									<td style="vertical-align: top;">
+									</td>
+								</tr>
+							</table>
+							<table class="table table-striped" id="table-event-detail"></table>
+						</div>
+					</div>
+					<div class="container shop-container normal-only" style="visibility: visible">
+						<!-- st:shop area -->
+						<section class="main-section">
+							<table style="width:100%;">
+								<tr>
+									<td style="width:105px; min-width:105px; vertical-align:top; text-align:center;">
+										<!-- st:shop categories -->
+										<div class="dropdown" id="product-group-list">
+											<div class="btn-group dropright menumain">
+												<ul class="navbar-nav ml-auto"></ul>
+											</div>
+										</div>
+										<!-- ed:shop categories -->
+									</td>
+									<td style="vertical-align:top; text-align:center;">
+										<!-- st:shop images -->
+										<div style="width:100%; display:inline-block; text-align:left;" class="mt-3" id="product-list"></div>
+										<!-- ed:shop images -->
+									</td>
+									<td style="width:450px; min-width:450px; vertical-align:top; text-align:center;">
+
+										<!-- st:shop cart -->
+										<div style="width:100%;" id="shop_cart">
+											<div class="offers mb-5 w-100 p-3 mt-3">
+												<div class="mb-3">
+													<h5 class="text-light lang" style="display: inline;">New Order</h5><p style="float:right" id="cart_date"></p>
+												</div>
+												<form>
+													<table id="cart" class="table cart table-condensed mb-0 w-100"></table>
+													<div id="payment-table" class="row cart mt-0"></div>
+													<div class="btn-group mb-5 w-100">
+														<button type="button" class="btn btn-lg f-left lang w-25 px-0 text-center py-0" data-placement="bottom" data-toggle="tooltip" title="Clear" id="new-order-clear" onclick="javascript:theShop.cart_clear()"><i class="fa fa fa-trash fa-2x"></i></button>
+														<button type="button" class="btn btn-lg f-right lang w-75 px-9 text-center ml-1" data-placement="bottom" data-toggle="tooltip" title="Done" id="new-order-done" onclick="javascript:theShop.cart_done()" ><i class="fal fa-check fa-2x"></i></button>		
+													</div>
+												</form>
+											</div>
+										</div>
+										<!-- ed:shop cart -->
+
+										<!-- st:shop cart gifts -->
+										<div style="width:100%; display:none;" id="shop_cart_gift">
+											<div class="offers mb-5 w-100 p-5 mt-8">
+												<div class="mb-3">
+													<h5 class="text-light lang" style="display: inline;">New Order</h5><p style="float:right" id="cart_date_gift"></p>
+												</div>
+												<form class="input-group border-0 bg-transparent" style="text-align:right;">
+													<table id="gift_cart" class="table cart table-condensed"></table>
+													<div class="btn-group mb-5 w-100">
+														<button type="button" class="btn btn-lg f-left lang" id="new-order-clear-gift" style="width:25%; padding-left:0px; padding-right:0px; text-align:center;" onclick="javascript:theShop.gift_cart_clear()" data-placement="bottom" data-toggle="tooltip" title="Clear"><i class="fa fa fa-trash fa-2x"></i></button>
+														<button type="button" class="btn btn-lg f-right lang" id="new-order-pay-coin" style="width:72%; padding-left:0px; padding-right:0px; text-align:center; margin-left:5px;" onclick="javascript:theShop.gift_cart_done(3)" data-placement="bottom" data-toggle="tooltip" title="Pay by coins"><i class="fal fa-check fa-2x"></i></button>		
+													</div>
+												</form>
+											</div>
+										</div>
+										<!-- ed:shop cart gifts -->
+
+									</td>
+								</tr>
+							</table>
+
+						</section>
+						<!-- ed:shop area -->
+					</div>
+				</div>
+			</div>
+			<!-- ed:main left col / game images -->
+
+			<!-- st:main right col / offers, etc -->
+			<div class="" style="width:24%; float:right;" id="games-right-region">
+				<div class="offers mb-3 w-100 p-5">
+					<div class="container-fluid" style="width:99%; display:table; height:100%;">
+						<div class="" style="width:24%; display:table-cell;">
+							<div class="user-icon">
+								<img src="images/default-avatar.png" id="cafe_info_member_logo" onerror="this.src='images/default-avatar.png';">
+							</div>
+						</div>
+						<div class="pl-5" style="width:75%; display:table-cell; vertical-align:middle;" id="member-info">
+							<p class="mb-1 fadeInDown ad-500ms"><strong class="name"></strong></p>
+							<p class="small normal-only"><span class="lang text-uppercase">Balance:</span>&nbsp<span id="member_balance_realtime"></span>&nbsp<span class="currency"></span></p>
+							<p class="small normal-only"><span class="lang text-uppercase">Bonus:</span>&nbsp&nbsp&nbsp<span id="member_balance_bonus_realtime"></span>&nbsp<span class="currency"></span></p>
+							<p class="small normal-only"><span class="lang text-uppercase">Coins:</span> <span class="value" title="" id="member_coin_balance"></span></p>
+							<p class="small normal-only"><span class="lang text-uppercase">PC name:</span> <span class="value" title="" id="postpaid_pc_name"></span></p>
+						</div>
+					</div>
+				</div>
+
+				<div class="offers mb-3 w-100 normal-only" style="height:250px; display:table;" id="offers_div">
+					<div id="carousel_main" class="carousel carousel-spotlight carousel-header slide carousel-fade fl-scn py-5" style="display:table-cell; vertical-align:middle;">
+
+						<!-- carousel items -->
+						<div class="carousel-inner a-cont" id="offers">
+							<div class="carousel-item item active" id="available-1">
+								<div class="main_carousel__content ad-900ms fadeIn mx-8 px-3">
+									<p class="carousel__heading mb-1 fadeInDown ad-500ms"><strong>1</strong></p>
+								</div>
+							</div>
+							<div class="carousel-item item" id="available-2">
+								<div class="main_carousel__content ad-900ms fadeIn mx-8 px-3">
+									<p class="carousel__heading mb-1 fadeInDown ad-500ms"><strong>2</strong></p>
+								</div>
+							</div>
+						</div>
+
+
+						<!-- carousel nav -->
+						<div class="carousel-control-prev a-out-t">
+							<a class="text-light" href="#carousel_main" data-slide="prev">
+								<span class="carousel-control-prev-icon"></span>
+							</a>
+						</div>
+						<div class="carousel-control-next a-out-t">
+							<a class="text-light" href="#carousel_main" data-slide="next">
+								<span class="carousel-control-next-icon"></span>
+							</a>
+						</div>
+
+					</div>
+				</div>
+
+				<div class="offers mb-3 w-100" style="height:250px; display:table; border:0 !important;" id="news_div">
+					<div id="news_carousel_main" class="carousel carousel-spotlight carousel-header slide carousel-fade fl-scn py-5" style="display:table-cell; vertical-align:middle;">
+
+						<!-- carousel items -->
+						<div class="carousel-inner a-cont"></div>
+
+						<!-- carousel nav -->
+						<div class="carousel-control-prev a-out-t">
+							<a class="text-light" href="#news_carousel_main" data-slide="prev">
+								<span class="carousel-control-prev-icon"></span>
+							</a>
+						</div>
+						<div class="carousel-control-next a-out-t">
+							<a class="text-light" href="#news_carousel_main" data-slide="next">
+								<span class="carousel-control-next-icon"></span>
+							</a>
+						</div>
+
+					</div>
+				</div>
+			</div>
+			<!-- ed:main right col / offers, etc -->
+
+		</div>
+	</section>
+	<!-- ed:main area -->
+</div>
+
+<!-- st:modal:rungame -->
+<div class="modal myModalRunGame" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Epic Games</h5>
+				<button type="button" class="close " data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body pb-3 pt-0 text-center">
+				<input type="hidden" name="game_id">
+				<div class="btn-group feedback-icon">
+					<a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="Switch to" onclick="javascript:rungame_switch_to()" class="mr-5 lang "><i class="fal fa-arrow-right-arrow-left fa-4x " style="line-height: 1.25;"></i></a>
+					<a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="Terminate" onclick="javascript:rungame_terminate()" class="lang "><i class="fa fa-circle-xmark fa-4x " style="line-height: 1.25;"></i></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- ed:modal:rungame -->
+
+<!-- st:modal:feedback -->
+<div class="modal myModalFeedback" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title lang">Customer feedback</h5>
+				<button type="button" class="close " data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<form id="feedbackForm" class="form-horizontal" onsubmit="return delay_execute(feedback_form_submit);">
+				<div class="modal-body px-3 py-0">
+					<div class="form-group">
+						<label for="subject" class="sr-only">Subject</label>
+						<input type="text" class="form-control lang modal-input bg-transparent" name="subject" id="subject" autofocus="autofocus" placeholder="Subject (up to 100 characters)" maxlength="50">
+					</div>
+					<div class="form-group mb-0">	
+						<label for="message" class="sr-only">Message</label>					
+						<textarea class="form-control lang modal-input bg-transparent" id="message" name="message" rows="6" placeholder="Message (up to 250 characters)" maxlength="250"></textarea>						
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="btn-group">						
+						<button type="submit" class="btn btn-lg lang mr-3 py-0" data-placement="bottom" data-toggle="tooltip" title="Yes"><i class="fal fa-check-circle fa-2x "></i></button>
+						<button type="button" class="btn btn-lg lang py-0" data-dismiss="modal" data-placement="bottom" data-toggle="tooltip" title="No"><i class="fal fa-circle-xmark fa-2x "></i></button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- ed:modal:feedback -->
+
+<!-- st:modal:lock_password -->
+<div class="modal myModalLock" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title lang">Lock screen</h5>
+				<button type="button" class="close " data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<form id="lockForm" class="form-horizontal" onsubmit="return delay_execute(lock_form_submit);">
+				<div class="modal-body px-3 py-0">
+					<div class="form-group mb-0">
+						<input type="password" class="form-control modal-input bg-transparent lang" name="password" id="lockform_password" autofocus="autofocus" placeholder="Set unlock password">
+					</div>
+				</div>
+
+				<div class="modal-footer">
+					<div class="btn-group">
+						<button type="submit" class="btn btn-lg lang mr-3 py-0" data-placement="bottom" data-toggle="tooltip" title="Yes"><i class="fal fa-check-circle fa-2x "></i></button>
+						<button type="button" class="btn btn-lg lang py-0" data-dismiss="modal" data-placement="bottom" data-toggle="tooltip" title="No"><i class="fal fa-circle-xmark fa-2x "></i></button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- ed:modal:lock_password -->
+
+<!-- st:modal:change_password -->
+<div class="modal myModalChangePassword" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title lang">Change password</h5>
+				<button type="button" class="close " data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<form id="passwordForm" class="form-horizontal" onsubmit="return delay_execute(change_password_form_submit);">
+				<div class="modal-body px-3 py-0">
+					<input type="hidden" name="account" id="account">
+					<div class="form-group">
+						<input type="text" class="form-control modal-input bg-transparent lang" name="member_account" id="member_account" placeholder="Account" disabled>
+					</div>
+					<div class="form-group" for="old_password">
+						<input type="password" class="form-control bg-transparent lang" name="old_password" id="old_password" placeholder="Current password">
+					</div>
+					<div class="form-group" for="new_password">
+						<input type="password" class="form-control bg-transparent lang" name="new_password" id="new_password" placeholder="New password">
+					</div>
+					<div class="form-group mb-0">
+						<input type="password" class="form-control bg-transparent lang" name="confirm_password"id="confirm_password" placeholder="Confirm password">
+					</div>
+				</div>
+
+				<div class="modal-footer">
+					<div class="btn-group">
+						<button type="submit" class="btn btn-lg lang mr-3 py-0" data-placement="bottom" data-toggle="tooltip" title="Yes"><i class="fal fa-check-circle fa-2x "></i></button>
+						<button type="button" class="btn btn-lg lang py-0" data-dismiss="modal" data-placement="bottom" data-toggle="tooltip" title="No"><i class="fal fa-circle-xmark fa-2x "></i></button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- ed:modal:change_password -->
+
+<!-- st:modal:logout -->
+<div class="modal myModalConfirmCheckout" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title lang">Confirm checkout</h5>
+				<button type="button" class="close " data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<form id="confirmCheckoutForm" onsubmit="return delay_execute(confirm_checkout_submit);">
+				<div class="modal-body p-3">
+					<p class="lang text-center">
+						Are you sure you want to checkout?
+					</p>
+				</div>
+				<div class="modal-footer">
+					<div class="btn-group">
+						<button type="submit" class="btn btn-lg lang mr-3 py-0" data-placement="bottom" data-toggle="tooltip" title="Yes"><i class="fal fa-check-circle fa-2x "></i></button>
+						<button type="button" class="btn btn-lg lang py-0" data-dismiss="modal" data-placement="bottom" data-toggle="tooltip" title="No"><i class="fal fa-circle-xmark fa-2x "></i></button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- ed:modal:logout -->
+
+<!-- st:modal:message -->
+<div class="modal myModalMessage" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title lang">Message</h5>
+				<button type="button" class="close " data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body p-3" >
+				<p class="lang text-center">Are you sure you want to checkout?</p>
+			</div>
+			<div class="modal-footer">
+				<div class="btn-group">					
+					<button type="button" class="btn btn-lg lang py-0" data-placement="bottom" data-toggle="tooltip" title="OK"><i class="fal fa-check-circle fa-2x "></i></button>						
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- ed:modal:message -->
+
+<!-- st:modal:join_event -->
+<div class="modal myModalJoinEvent" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title lang">Join event</h5>
+				<button type="button" class="close " data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<form id="joinEventForm" class="form-horizontal" onsubmit="return delay_execute(theEvents.join_post);">
+				<div class="modal-body p-3 text-center">
+					<p class="lang">
+						Please read the terms of services before join the event.
+					</p>						
+					<div class="form-check mt-2">
+						<input type="checkbox" class="form-check-input" id="agreeTerms" required="">
+						<label for="agreeTerms" class="form-check-label"><a href="javascript:open_url(theEvents.rank_baseurl() + '/terms.php')">I agree to the terms of services.</a></label>							
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="btn-group">
+						<input type="hidden" name="event_id">
+						<button type="submit" class="btn btn-lg lang mr-3 py-0" data-placement="bottom" data-toggle="tooltip" title="I Agree"><i class="fal fa-check-circle fa-2x "></i></button>
+						<button type="button" class="btn btn-lg lang py-0" data-dismiss="modal" data-placement="bottom" data-toggle="tooltip" title="Leave"><i class="fal fa-circle-xmark fa-2x "></i></button>						
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- ed:modal:join_event -->
+
+<!-- st:modal:convert-member -->
+<div class="modal myModalConvertMember" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document" style="width:700px; max-width:700px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title lang">Convert to member</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="form-convert-member" class="form-horizontal" onsubmit="return delay_execute(theConvertToMember.submit);">
+                <div class="modal-body" style="padding: 20px 70px;">
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="control-label lang">Account</label>
+                                <input type="text" class="form-control modal-input bg-transparent" name="account" >
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="control-label lang">Birthday</label>
+                                <input type="date" class="form-control modal-input bg-transparent" name="birthday" >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="control-label lang">New password</label>
+                                <input type="password" class="form-control bg-transparent" name="password">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="control-label lang">Confirm password</label>
+                                <input type="password" class="form-control bg-transparent" name="confirm_password">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="control-label lang">First name</label>
+                                <input type="text" class="form-control modal-input bg-transparent" name="first_name" >
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="control-label lang">Last name</label>
+                                <input type="text" class="form-control modal-input bg-transparent" name="last_name" >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="control-label lang">Phone</label>
+                                <input type="text" class="form-control modal-input bg-transparent" name="phone" >
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="control-label lang">Email</label>
+                                <input type="email" class="form-control modal-input bg-transparent" name="email" >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <div class="btn-group">
+						<button type="submit" class="btn btn-lg lang mr-3 py-0" data-placement="bottom" data-toggle="tooltip" title="Convert"><i class="fal fa-check-circle fa-2x "></i></button>
+						<button type="button" class="btn btn-lg lang py-0" data-dismiss="modal" data-placement="bottom" data-toggle="tooltip" title="No"><i class="fal fa-circle-xmark fa-2x "></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- ed:modal:convert-member -->
+
+<!-- blocker -->
+<div id="block-div"></div>
+
+<div id="spinner" class="cover">
+	<div class="text-center cover-font">
+		<div class="spinner-border" style="width: 6rem;height: 6rem;" role="status">
+			<i class="fas fa-spinner fa-spin fa-5x"></i>
+		</div>
+	</div>
+</div>
+
+<script type="text/x-tmpl" id="tmpl-more-games-classes">
+	{% for (var i=0; i<o.items.length; i++) { %}
+	<a class="dropdown-item" data-type="class" data-class="{%=o.items[i].class_name%}" href="javascript:theGameList.load_games_by_class('class', '{%=encodeURIComponent(o.items[i].class_name)%}', '')">{%=o.items[i].class_name%}</a>
+	{% } %}
+</script>
+
+<script type="text/x-tmpl" id="tmpl-games">
+	{% for (var i=0; i<o.items.length; i++) { %}
+	<div class="game-item">
+		<div class="game-image">
+			{% if (o.items[i].pkg_game_type > 1 && o.items[i].pkg_has_license > 0) { %}
+			<span class="badge"><i class="fal fa-key-skeleton fa-2x"></i></span>
+			{% } else { %}
+				{% if (o.items[i].local_hot_rank <= 3) { %}
+				<span class="badge"><i class="fal fa-trophy fa-2x"></i></span>
+				{% } %}
+			{% } %}
+			<img src="posters/{%=o.items[i].pkg_id%}.jpg" onerror="this.src='images/default-poster.png';" alt="{%=o.items[i].pkg_name%}">
+			<div class="overlay" style="background:rgba(17, 17, 17, 0.75); ">
+				<div class="btn-group" style="text-align:center; display:block; width:100%; margin-top:50%;">
+					{% if (o.type != 'license') { %}
+					<button class="btn btn-lg" onclick="javascript:theGameList.play_game('{%=o.items[i].pkg_id%}', '{%=thePCStatus.status_pc_token%}', 0, '')" data-toggle="tooltip" data-placement="bottom" title="{%=translate_string('Play')%}">
+						<i class="fal fa-play fa-2x"></i>
+					</button>
+					{% } %}
+					{% if (o.items[i].pkg_game_type > 1 && o.items[i].pkg_has_license > 0) { %}
+					<button class="btn btn-lg ml-2" onclick="javascript:theGameList.request_game_licenses({%=o.items[i].pkg_id%})" id="btn-play-with-license-{%=o.items[i].pkg_id%}" title="{%=translate_string('Play with free license')%}">
+						<i class="fal fa-paper-plane fa-2x"></i>
+					</button>
+					{% } %}
+				</div>
+			</div>
+		</div>
+	</div>
+	{% } %}
+</script>
+
+<script type="text/x-tmpl" id="tmpl-offers">
+	{% for (var i=0; i<o.items.length; i++) { %}
+	<div class="carousel-item item {% if (i == 0) { %}active{% } %}" id="available-{%=o.items[i].id%}">
+		<div class="main_carousel__content ad-900ms fadeIn mx-8 px-3">
+			<p class="carousel__heading mb-1 fadeInDown ad-500ms"><strong>{%=o.items[i].name%}</strong></p>
+			{% if (o.items[i].is_total) { %}
+			<p class="small mb-5 lang">This is the total amount of time available from all offers on your account</p>
+			{% } %}
+			<div class="fadeInDown" style="border:1px solid #444; padding:5px; border-radius:0.25rem;">
+				<div class="progress-bar progress-bar-striped progress-bar-animated" style="width:0%; height:4rem; background-color:#5f5;"></div>
+			</div>
+			<p class="carousel__heading mt-1 fadeInDown ad-500ms text-center"><strong class="remaining">02:34:56</strong></p>
+		</div>
+	</div>
+	{% } %}
+</script>
+
+<script type="text/x-tmpl" id="tmpl-news">
+	{% for (var i=0; i<o.items.length; i++) { %}
+	<div class="carousel-item item {% if (i == 0) { %}active{% } %}" style="text-align:center;">
+		<img src="posters/ns-{%=o.items[i].news_id%}.jpg" onerror="this.src='images/default-news.jpg'" style="max-width:100%; max-height:100%; cursor: pointer;" alt="{%=o.items[i].news_name%}"
+			{% if (o.items[i].news_url.length > 0) { %} onclick="javascript:open_news({%=o.items[i].news_id%})" {% } %} style="cursor:pointer;">
+	</div>
+	{% } %}
+</script>
+
+<script type="text/x-tmpl" id="tmpl-game-rank">
+	<div class="carousel-item item {% if (o.active) { %}active{% } %}">
+		<div class="main_carousel__content ad-900ms fadeIn mx-8 px-3">
+			<img src="images/{%=o.game_code%}.png" onerror="this.src='https://cp.icafecloud.com/images/{%=o.game_code%}-logo.png';" style="max-height:50px;">
+			<table class="table table-hover table-striped">
+				<thead>
+				<tr>
+					<th class="text-center lang">Rank</th>
+					<th class="lang">Players</th>
+					<th class="lang">Wins</th>
+					<th class="lang">Points</th>
+					<th>&nbsp;</th>
+				</tr>
+				</thead>
+				<tbody>
+
+				{% for (var i=0; i<o.items.length; i++) { %}
+				<tr>
+					{% if (o.items[i].rank == 1) { %}
+					<th scope="row"><span style="background-color: #feeb00; padding:2px 20px;">1</span></th>
+					{% } %}
+
+					{% if (o.items[i].rank == 2) { %}
+					<th scope="row"><span style="background-color: #d0e5ea; padding:2px 20px;">2</span></th>
+					{% } %}
+
+					{% if (o.items[i].rank == 3) { %}
+					<th scope="row"><span style="background-color: #f86c2f; padding:2px 20px;">3</span></th>
+					{% } %}
+
+					{% if (o.items[i].rank > 3) { %}
+					<th scope="row">{%=o.items[i].rank%}</th>
+					{% } %}
+
+					<td class="text-truncate" style="max-width:105px;">{%=o.items[i].track_member_account%}</td>
+					<td>{%=o.items[i].track_wins%}</td>
+					<td>{%=o.items[i].track_game_coins%}</td>
+					<td>
+						{% if (o.items[i].track_member_account != '-') { %}
+							{% if (o.items[i].rank < o.items[i].previous_rank || o.items[i].previous_rank == 0) { %}
+							<i class="fal fa-caret-up fa-2x text-success"></i>
+							{% } %}
+							{% if (o.items[i].rank > o.items[i].previous_rank && o.items[i].previous_rank > 0) { %}
+							<i class="fal fa-caret-down fa-2x text-danger"></i>
+							{% } %}
+						{% } %}
+					</td>
+				</tr>
+				{% } %}
+
+				{% for (var i=o.items.length; i<10; i++) { %}
+				<tr>
+					<th scope="row">{%=(i+1)%}</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				{% } %}
+				
+				</tbody>
+			</table>
+		</div>
+	</div>
+</script>
+
+<script type="text/x-tmpl" id="tmpl-product-group">
+	<li data-group="-3" class="nav-item active">
+		<a class="nav-link" href="javascript:theShop.change_group(-3)" style="padding-right:0 !important;">
+			<div class="icon"><i class="fal fa-layer-group fa-3x"></i></div>
+			<div class="name lang">All</div>
+		</a>
+	</li>
+	{% for (var i=0; i<o.items.length; i++) { %}
+	{% if ((thePCStatus.member_icafe_id != theCafe.id && o.items[i].product_group_id == -1) || o.items[i].product_count <= 0) continue; %}
+	<li data-group="{%=o.items[i].product_group_id%}" class="nav-item">
+		<a class="nav-link" href="javascript:theShop.change_group({%=o.items[i].product_group_id%})" style="padding-right:0 !important;">
+			{% var image = ''; %}
+			{% if (o.items[i].product_group_has_icon) { image = 'icons/pg-' + o.items[i].product_group_id.toString() + '.png'; %}
+			<div class="icon"><img src="{%=image%}" style="max-width:50px;"></div> 
+			{% } else { %}
+			{% if (o.items[i].product_group_id === -1) { %}<div class="icon"><i class="fal fa-alarm-clock fa-3x"></i></div>{% } %}
+			{% if (o.items[i].product_group_id === -2) { %}<div class="icon"><i class="fal fa-gif fa-3x"></i></div>{% } %}
+			{% if (o.items[i].product_group_id >= 0) { %}<div class="icon"><i class="fal fa-wine-glass-alt fa-3x"></i></div>{% } %}
+			{% } %}
+			
+			<div class="name lang">{%=o.items[i].product_group_name%}</div>
+		</a>
+	</li>
+	{% } %}
+</script>
+
+<script type="text/x-tmpl" id="tmpl-product">
+	{% for (var i=0; i<o.items.length; i++) { %}
+	{% if (theShop.current_group_id == -2 && o.items[i].product_coin_price <= 0) continue; %}
+	{% if (theShop.current_group_id != -2 && o.items[i].product_price <= 0) continue; %}
+	<div style="padding-right:15px; width:175px; height:175px; display:inline-block; float:left;">
+		<div class="shop-image">
+			{% var image = ''; %}
+			{% if (o.items[i].product_group_id === -1) { image = 'images/default-offer.jpg'; } %}
+			{% if (o.items[i].product_group_id >= 0) { image = 'images/default-product.jpg'; } %}
+			{% if (o.items[i].product_has_image) { image = 'posters/' + o.items[i].product_id + '.jpg'; }  %}
+			<img src="{%=image%}" alt="{%=o.items[i].product_name%}">
+			<div class="overlay" style="background:rgba(17, 17, 17, 0.75);">
+				<div class="btn-group" style="width:100%; text-align:center; margin-top:15%;">
+					<div class="mb-3" style="width:100%;">
+						<p style="text-align:center;color:white;">
+							<span style="height:25px; min-height:25px; display:block; width:100%; text-align:center; overflow: hidden;">{%=o.items[i].product_name%}</span>
+							{% if (theShop.current_group_id == -2) { %}
+							<strong>{%=o.items[i].product_coin_price%} {%=translate_string('coin')%}</strong>
+							{% } else { %}
+							<strong>{%=(typeof theSettings.currency == 'undefined' ? '$' : theSettings.currency)%}{%=theTax.getPriceWithTax(o.items[i].product_tax_id, o.items[i].product_price)%}</strong>
+							{% } %}
+						</p>
+					</div>
+					{% if (theShop.current_group_id == -2) { %}
+					<button class="btn btn-lg lang" onclick="javascript:theShop.gift_cart_change_qty('{%=o.items[i].product_id%}', 1)">
+						<i class="fal fa-cart-plus fa-2x"></i>
+					</button>
+					{% } else { %}
+					<button class="btn btn-lg lang" onclick="javascript:theShop.cart_change_qty('{%=o.items[i].product_id%}', 1)">
+						<i class="fal fa-cart-plus fa-2x"></i>
+					</button>
+					{% } %}
+				</div>
+			</div>
+		</div>
+	</div>
+	{% } %}
+</script>
+
+<script type="text/x-tmpl" id="tmpl-new-order-items">
+	<tbody>
+	{% var total_amount = 0, tax = 0; %}
+	{% for (var i=0; i<o.items.length; i++) { %}
+	{% total_amount += parseFloat(o.items[i].order_item_money); %}
+	{% tax += parseFloat(o.items[i].order_tax); %}
+
+	<tr data-productid="{%=o.items[i].product_id%}" style="min-height:75px; height:75px;">
+		<td class="feedback-icon lang" data-toggle="tooltip" data-placement="bottom" title="Delete">
+			<a href="javascript:theShop.cart_change_qty('{%=o.items[i].product_id%}', -999999)">
+				<i class="fal fa-trash-can fa-2x"></i>
+			</a>
+		</td>
+		<td class="text-left" style="width:40%;">
+			{%=o.items[i].product_name%}<br/>
+			{%=(typeof theSettings.currency == 'undefined' ? '$' : theSettings.currency)%}{%=o.items[i].product_price%}
+		</td>
+		<td>
+			<input type="number" class="form-control text-center new-order-item-qty bg-transparent" data-productid="{%=o.items[i].product_id%}" min="1" value="{%=o.items[i].order_item_qty%}">
+		</td>
+		<td class="text-right">
+			{%=(typeof theSettings.currency == 'undefined' ? '$' : theSettings.currency)%}{%=o.items[i].order_item_money.toFixed(2)%}
+		</td>
+	</tr>
+
+	{% } %}
+
+	{% for (var i=o.items.length; i<3; i++) { %}
+	<tr style="min-height:75px; height:75px;">
+		<td colspan="4"></td>
+	</tr>
+	{% } %}
+
+	</tbody>
+	<tfoot>
+	<tr>
+		<td class="text-left" colspan="3">{%=translate_string("Sub-total:")%}</td>
+		<td class="text-right">{%=(total_amount - tax).toFixed(2)%}</td>
+	</tr>
+	<tr>
+		<td class="text-left" colspan="3">{%=translate_string("Tax:")%}</td>
+		<td class="text-right">{%=tax.toFixed(2)%}</td>
+	</tr>
+	{% if (thePCStatus.member_group_discount_rate > 0) { %}
+	<tr>
+		<td class="text-left" colspan="3">{%=translate_string("Discount")%}:</td>
+		<td class="text-right">{%=(total_amount * thePCStatus.member_group_discount_rate/100.0).toFixed(2)%}</td>
+	</tr>
+	{% } %}
+	<tr>
+		<td class="text-left" colspan="3">{%=translate_string("Total amount:")%}</td>
+		<td class="text-right">{%=(total_amount - total_amount * thePCStatus.member_group_discount_rate/100.0).toFixed(2)%}</td>
+	</tr>
+	</tfoot>
+</script>
+
+<script type="text/x-tmpl" id="tmpl-payment-method">	
+	<div class="row mb-3 w-100">
+		<div class="col-3 text-right">
+			<span  class="text-lg ml-4">{%=translate_string("Payment:")%}</span>
+		</div>
+		<div class="col-9 d-flex justify-content-end">			
+			{% if (theSettings.payment_method_cash_in_client == undefined || theSettings.payment_method_cash_in_client == 1) { %}
+			
+				<div class="custom-control custom-radio  mr-0">
+					<input type="radio" id="payment_method_cash" name="payment_method" class="custom-control-input">
+					<label class="custom-control-label lang" for="payment_method_cash" data-toggle="tooltip" data-placement="bottom" title="Cash"><i class="fal fa-money-bill fa-2x"></i></label>
+				</div>			
+			{% } %}
+			{% if (theSettings.payment_method_credit_card == undefined || theSettings.payment_method_credit_card == 1) { %}		
+				<div class="custom-control custom-radio  ml-5 mr-0">
+					<input type="radio" id="payment_method_card" name="payment_method" class="custom-control-input">
+					<label class="custom-control-label lang" for="payment_method_card" data-toggle="tooltip" data-placement="bottom" title="Credit card"><i class="fal fa-credit-card fa-2x"></i></label>
+				</div>			
+				
+			{% } %}
+			{% if (theSettings.payment_method_balance == undefined || theSettings.payment_method_balance == 1) { %}
+				<div class="custom-control custom-radio ml-5 mr-0">
+
+					<input type="radio" id="payment_method_balance" name="payment_method" class="custom-control-input">
+					<label class="custom-control-label lang" for="payment_method_balance" data-toggle="tooltip" data-placement="bottom" title="balance"><i class="fal fa-coins fa-2x"></i></label>
+				</div>
+
+			{% } %}
+		</div>
+	</div>
+</script>
+
+<script type="text/x-tmpl" id="tmpl-new-order-gift-items">
+	<tbody>
+	{% var total_amount = 0; %}
+	{% for (var i=0; i<o.items.length; i++) { %}
+	{% total_amount += parseFloat(o.items[i].order_item_money); %}
+
+	<tr data-productid="{%=o.items[i].product_id%}" style="min-height:75px; height:75px;">
+		<td>
+			<a href="javascript:theShop.gift_cart_change_qty('{%=o.items[i].product_id%}', -999999)">
+				<i class="fal fa-trash-can fa-2x"></i>
+			</a>
+		</td>
+		<td class="text-left" style="width:40%;">
+			{%=o.items[i].product_name%}<br/>
+			{%=o.items[i].product_coin_price%} {%=translate_string("coin")%}
+		</td>
+		<td>
+			<input type="number" class="form-control text-center new-order-item-gift-qty bg-transparent" data-productid="{%=o.items[i].product_id%}" min="1" value="{%=o.items[i].order_item_qty%}">
+		</td>
+		<td class="text-right">
+			{%=o.items[i].order_item_money.toFixed(2)%} {%=translate_string("coin")%}
+		</td>
+	</tr>
+
+	{% } %}
+
+	{% for (var i=o.items.length; i<3; i++) { %}
+	<tr style="min-height:75px; height:75px;">
+		<td colspan="4"></td>
+	</tr>
+	{% } %}
+
+	</tbody>
+	<tfoot>
+	<tr>
+		<td class="text-left" colspan="3">{%=translate_string("Total coins:")%}</td>
+		<td class="text-right">{%=total_amount.toFixed(2)%}</td>
+	</tr>
+	</tfoot>
+</script>
+
+<script type="text/x-tmpl" id="tmpl-event-banner">
+	<div class="name-container feedback-icon">
+		<div class="name">{%=o.event.event_name%}</div>
+
+		{% if (o.event.event_status == 'past') { %}
+		<a href="#">
+			<i class="fal fa-flag-checkered fa-2x ml-5 lang" data-toggle="tooltip" data-placement="bottom" title="Event is end"></i>
+		</a>
+		{% } else { %}
+			{% if (o.event.event_game_code.toLowerCase() == 'all') { %}
+				{% if (typeof(o.event.emember_member_account) == 'undefined') { %}
+		<a href="javascript:theEvents.play('{%=o.event.event_id%}')">
+			<i class="fal fa-play fa-2x ml-5 lang" data-toggle="tooltip" data-placement="bottom" title="Join game"></i>
+		</a>
+				{% } %}
+			{% } else { %}
+		<a href="javascript:theEvents.play('{%=o.event.event_id%}')">
+			<i class="fal fa-play fa-2x ml-5 lang" data-toggle="tooltip" data-placement="bottom" title="Play game"></i>
+		</a>
+			{% } %}
+		{% } %}
+		<a href="javascript:theEvents.open('{%=o.event.event_id%}')">
+			<i class="fal fa-circle-info fa-2x ml-5 lang" data-toggle="tooltip" data-placement="bottom" title="Show event details"></i>
+		</a>
+	</div>
+
+	<div class="info-container">
+		<div style="float:left; width:50%;">
+			<p>
+				<i class="fal fa-gamepad-modern fa-2x" style="width:36px"></i>
+				<span>
+				{%=o.event.game_name%}
+				{% if (o.event.event_game_mode.length > 0) { %}
+				/ {%=o.event.event_game_mode%}
+				{% } %}
+				</span>
+			</p>
+
+			<p>
+				<i class="fal fa-calendar-day fa-2x" style="width:36px"></i>
+				<span> {%=moment(o.event.event_start_time_local).format('MM/DD HH:mm')%} - {%=moment(o.event.event_end_time_local).format('MM/DD HH:mm')%} </span>
+			</p>
+
+			<p>
+				<i class="fal fa-square-info fa-2x" style="width:36px"></i>
+				<span>
+				{% if (o.event.event_score_type == 'all') { %}
+				{%=translate_string('Total score')%}
+				{% } %}
+
+				{% if (o.event.event_score_type == 'best') { %}
+				{%=translate_string('Take best')%}
+				{% } %}
+
+				{% if (o.event.event_score_type == 'compound') { %}
+				{%=translate_string('Best {0} matches').replace('{0}', o.event.event_top_matches)%}
+				{% } %}
+				</span>
+			</p>
+
+			<p>
+				<i class="fal fa-cubes fa-2x" style="width:36px"></i>
+				<span> {%=translate_string('Best {0} players').replace('{0}', o.event.event_top_winners)%} </span>
+			</p>
+
+		</div>
+		<div style="float:right; width:50%;">
+			{% if (o.event.event_bonus_amount > 0) { %}
+			<p>
+				<i class="fal fa-gem fa-2x" style="width:36px"></i>
+				<span> {%=o.event.event_bonus_currency%} {%=parseFloat(o.event.event_bonus_amount).toFixed(2).replace('.00', '')%} </span>
+			</p>
+			{% } %}
+
+			{% if (o.event.emember_telegram_username) { %}
+			<p>
+				<i class="fab fa-telegram fa-2x" data-toggle="tooltip" data-placement="bottom" title="You telegram username" style="width:36px"></i>
+				<span> {%=o.event.emember_telegram_username%} </span>
+			</p>
+			{% } %}
+
+			{% if (o.event.emember_count && o.event.emember_rank) { %}
+			<p>
+				<i class="fal fa-trophy fa-2x" data-toggle="tooltip" data-placement="bottom" title="Your rank is #{%=o.event.emember_rank%}, total {%=o.event.emember_count%} players" style="width:36px"></i>
+				<span> {%=o.event.emember_rank%} / {%=o.event.emember_count%} </span>
+			</p>
+			{% } %}
+
+			{% if (o.event.emember_point) { %}
+			<p>
+				<i class="fal fa-circle-star fa-2x" data-toggle="tooltip" data-placement="bottom" title="Your point is {%=o.event.emember_point%}" style="width:36px"></i>
+				<span> {%=o.event.emember_point%} </span>
+			</p>
+			{% } %}
+
+			{% if (o.event.event_status == 'end' && o.event.event_bonus_amount > 0) { %}
+			{% if (o.event.emember_bonus) { %}
+			<p>
+				<i class="fal fa-gift" style="width:36px"></i>
+				<span> won {%=o.event.emember_bonus%} {%=o.event.event_bonus_currency%} </span>
+			</p>
+			{% } %}
+			{% } %}
+		</div>
+	</div>
+
+</script>
+
+<script type="text/x-tmpl" id="tmpl-events">
+	{% for (var i=0; i<o.events.length; i++) { %}
+	<div class="event event-{%=o.events[i].event_game_code%} event-{%=o.events[i].event_status%}" data-id="{%=o.events[i].event_id%}"
+		{% if (!o.is_details_page) { %}
+		onclick="javascript:theEvents.open('{%=o.events[i].event_id%}')"
+		{% } %}
+		>
+		<div class="cover"></div>
+		<div class="icon"></div>
+		<div class="info">
+			<div style="padding:8px;">
+				<div class="name">{%=o.events[i].event_name%}</div>
+
+				<p>
+				<i class="fal fa-gamepad-modern"></i> {%=o.events[i].game_name%}
+				{% if (o.events[i].event_game_mode.length > 0) { %}
+				/ {%=o.events[i].event_game_mode%}
+				{% } %}
+				</p>
+
+				<p>
+				<i class="fal fa-clock"></i> {%=moment(o.events[i].event_start_time_local).format('MM/DD HH:mm')%} - {%=moment(o.events[i].event_end_time_local).format('MM/DD HH:mm')%}
+				</p>
+
+				<p>
+					<i class="fal fa-circle-info"></i>
+					<span>
+					{% if (o.events[i].event_score_type == 'all') { %}
+					{%=translate_string('Total score')%}
+					{% } %}
+
+					{% if (o.events[i].event_score_type == 'best') { %}
+					{%=translate_string('Take best')%}
+					{% } %}
+
+					{% if (o.events[i].event_score_type == 'compound') { %}
+					{%=translate_string('Best {0} matches').replace('{0}', o.events[i].event_top_matches)%}
+					{% } %}
+					</span>
+				</p>
+
+				<p>
+					<i class="fal fa-cubes"></i> {%=translate_string('Best {0} players').replace('{0}', o.events[i].event_top_winners)%}
+				</p>
+
+				{% if (o.events[i].event_status == 'end' && o.events[i].event_bonus_amount > 0) { %}
+				<p>
+				<i class="fal fa-gem"></i> {%=o.events[i].event_bonus_currency%} {%=parseFloat(o.events[i].event_bonus_amount).toFixed(2).replace('.00', '')%}
+				</p>
+				{% } %}
+
+				{% if (o.events[i].event_status != 'end' && o.events[i].event_bonus_amount > 0) { %}
+				<p>
+				<i class="fal fa-gem"></i> {%=o.events[i].event_bonus_currency%} {%=parseFloat(o.events[i].event_bonus_amount).toFixed(2).replace('.00', '')%}
+				{% if (o.events[i].emember_bonus) { %}
+				(won {%=o.events[i].emember_bonus%})
+				{% } %}
+				</p>
+				{% } %}
+
+				{% if (o.events[i].emember_id) { %}
+				<p>
+				<i class="fal fa-trophy"  data-toggle="tooltip" data-placement="bottom" title="Your rank is #{%=o.events[i].emember_rank%}, total {%=o.events[i].emember_count%} players"></i> {%=o.events[i].emember_rank%} / {%=o.events[i].emember_count%}
+				<i class="fal fa-chart-line ml-5"  data-toggle="tooltip" data-placement="bottom" title="Your point is {%=o.events[i].emember_point%}"></i> {%=o.events[i].emember_point%}
+				</p>
+				{% } %}
+			</div>
+		</div>
+	</div>
+	{% } %}
+</script>
+
+<script type="text/x-tmpl" id="tmpl-event-buttons">
+	{% if (o.event.event_status == 'past') { %}
+	<p style="margin:70px;">
+	<a href="#">
+		<i class="fal fa-flag-checkered fa-3x lang" data-toggle="tooltip" data-placement="bottom" title="Event is end" style="color:#888888;"></i>
+	</a>
+	</p>
+	{% }else{ %}
+		{% if (o.event.event_game_code.toLowerCase() == 'all') { %}
+			{% if (typeof(o.event.emember_member_account) == 'undefined') { %}
+	<p style="margin:70px;">
+	<a href="javascript:theEvents.play('{%=o.event.event_id%}')" id="btn-event-play">
+		<i class="fal fa-play fa-3x lang" style="color:#888888;" data-toggle="tooltip" data-placement="bottom" title="Join game"></i>
+	</a>
+	</p>
+			{% } %}
+		{% }else{ %}
+	<p style="margin:70px;">
+	<a href="javascript:theEvents.play('{%=o.event.event_id%}')" id="btn-event-play">
+		<i class="fal fa-play fa-3x lang" style="color:#888888;" data-toggle="tooltip" data-placement="bottom" title="Play game"></i>
+	</a>
+	</p>
+		{% } %}
+	{% } %}
+
+	<p style="margin:70px;">
+		<a href="javascript:open_url(theEvents.rank_baseurl() + '/terms.php')" style="color:#888888;">
+			<i class="fal fa-scale-balanced fa-3x lang" data-toggle="tooltip" data-placement="bottom" title="Service terms"></i>
+		</a>
+	</p>
+	<p style="margin:70px;">
+		<a href="javascript:open_url('{%=theEvents.rank_baseurl() + '/event.php?from=client&show=description&event_id=' + o.event.event_id + '&event_is_global=' + o.event.event_is_global + '&icafe_id=' + theCafe.id + '&server=' + theSettings.license_info.license_server_code%}')" style="color:#888888;">
+			<i class="fal fa-square-info fa-3x lang" data-toggle="tooltip" data-placement="bottom" title="Event details"></i>
+		</a>
+	</p>
+</script>
+
+<script type="text/x-tmpl" id="tmpl-event-detail">
+	<thead>
+	<tr>
+		<th class="lang"> POS </th>
+		<th class="lang"> PLAYER </th>
+
+		{% if (o.event.event_is_global) { %}
+		<th class="lang"> CENTER NAME </th>
+		{% } %}
+
+		<th class="lang"> MATCHES </th>
+
+		{% if (['fortnite', 'lol', 'valorant', 'all'].indexOf(o.event.event_game_code) >= 0) { %}
+		<th class="lang"> WINS </th>
+		{% } %}
+
+		{% if (['fortnite', 'lol', 'valorant', 'dota2', 'csgo', 'all'].indexOf(o.event.event_game_code) >= 0) { %}
+		<th class="lang"> KILLS </th>
+		{% } %}
+
+		{% if (['lol', 'valorant', 'dota2', 'csgo', 'all'].indexOf(o.event.event_game_code) >= 0) { %}
+		<th class="lang"> ASSISTS </th>
+		{% } %}
+
+		{% if (['lol', 'dota2', 'csgo', 'all'].indexOf(o.event.event_game_code) >= 0) { %}
+		<th class="lang"> DEATHS </th>
+		{% } %}
+
+		{% if (['dota2'].indexOf(o.event.event_game_code) >= 0) { %}
+		<th class="lang"> LAST HITS </th>
+		{% } %}
+
+		<th class="lang"> POINT </th>
+		<th class="lang"> BONUS </th>
+		<th class="lang"> BONUS PAID </th>
+
+		{% if (o.event.event_is_global) { %}
+		<th class="lang"> STATUS </th>
+		{% } %}
+	</tr>
+	</thead>
+	<tbody>
+		{% for (var i=0; i<o.members.length; i++) { %}
+		<tr>
+			<td> {%=o.members[i].emember_rank%} </td>
+			<td> {%=o.members[i].emember_member_account%} </td>
+
+			{% if (o.event.event_is_global) { %}
+			<td> <img src="images/flags/{%=o.members[i].license_country.toLowerCase()%}.png" style="width:24px;height:24px;"> {%=o.members[i].license_icafename%} </td>
+			{% } %}
+
+			<td> {%=o.members[i].emember_point_matches%}/{%=o.members[i].emember_matches%} </td>
+
+			{% if (['fortnite', 'lol', 'valorant', 'all'].indexOf(o.event.event_game_code) >= 0) { %}
+			<td> {%=o.members[i].emember_wins%} </td>
+			{% } %}
+
+			{% if (['fortnite', 'lol', 'valorant', 'dota2', 'csgo', 'all'].indexOf(o.event.event_game_code) >= 0) { %}
+			<td> {%=o.members[i].emember_kills%} </td>
+			{% } %}
+
+			{% if (['lol', 'valorant', 'dota2', 'csgo', 'all'].indexOf(o.event.event_game_code) >= 0) { %}
+			<td> {%=o.members[i].emember_assists%} </td>
+			{% } %}
+
+			{% if (['lol', 'dota2', 'csgo', 'all'].indexOf(o.event.event_game_code) >= 0) { %}
+			<td> {%=o.members[i].emember_deaths%} </td>
+			{% } %}
+
+			{% if (['dota2'].indexOf(o.event.event_game_code) >= 0) { %}
+			<td> {%=o.members[i].emember_lasthits%} </td>
+			{% } %}
+
+			<td> {%=o.members[i].emember_point%} </td>
+			<td> {% if (o.members[i].emember_bonus > 0) { %} {%=o.members[i].emember_bonus%} {% } %} </td>
+			<td> {% if (o.members[i].emember_bonus_pay_status) { %} {%=translate_string('Paid')%} {% } else { %} {%=translate_string('-')%} {% } %} </td>
+
+			{% if (o.event.event_is_global) { %}
+			<td>
+				{% if (typeof(o.members[i].emember_status) != 'undefined' && o.members[i].emember_status == 1) { %}
+				<span>{%=translate_string('joined')%}</span>
+				{% } else { %}
+				<span class="lang" data-toggle="tooltip" data-placement="bottom" title="Not joined telegram group" style="cursor:pointer;">{%=translate_string('to be confirmed')%}</span>
+				{% } %}
+			</td>
+			{% } %}
+		</tr>
+		{% } %}
+	</tbody>
+</script>
+
+<script src="js/jquery.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/toastr/toastr.js"></script>
+<script src="js/sweetalert/sweetalert.js"></script>
+<script src="js/templates/tmpl.js"></script>
+<script src="js/contextmenu/jquery.contextMenu.js"></script>
+<script src="js/moment.js"></script>
+
+<script src="js/icafe.js"></script>
+
+<script src="js/md5.js"></script>
+<script src="js/accounting.js"></script>
+<script type="text/javascript">
+	Number.prototype.zeroPad = Number.prototype.zeroPad ||
+		function(base){
+			var nr = this, len = (String(base).length - String(nr).length)+1;
+			return len > 0? new Array(len).join('0')+nr : nr;
+		};
+</script>
+<script src="js/language.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
